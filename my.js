@@ -2,8 +2,9 @@ import { GLTFLoader } from "./GLTFLoader.js";
 import { FontLoader } from "./FontLoader.js";
 import { TextGeometry } from "./TextGeometry.js";
 import { OrbitControls } from "./OrbitControls.js";
+//import { ImageLoader } from "./ImageLoader.js";
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(
+const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
     0.01,
@@ -21,12 +22,36 @@ document.body.appendChild(renderer.domElement);
 
 
 const controls = new OrbitControls( camera, renderer.domElement );
+controls.enablePan = false;
+controls.enableZoom = false;
 camera.position.set(0,0,40);
 controls.update();
+let loader = new THREE.ImageLoader();
 
-const loader = new FontLoader();
+// load a image resource
+loader.load(
+	// resource URL
+	'github.png',
+
+	// onLoad callback
+	function ( image ) {
+		// use the image, e.g. draw part of it on a canvas
+		const canvas = document.createElement( 'canvas' );
+		const context = canvas.getContext( '2d' );
+		context.drawImage( image, 100, 100 );
+	},
+
+	// onProgress callback currently not supported
+	undefined,
+
+	// onError callback
+	function () {
+		console.error( 'An error happened.' );
+	}
+);
+loader = new FontLoader();
 loader.load('myfont2.json', function (font) {
-    const txt1 = new TextGeometry('COMING SOON', {
+    const txt1 = new TextGeometry('WORK IN PROGRESS', {
         font: font,
         size: 1.2,
         height: 0.5,
@@ -45,7 +70,7 @@ loader.load('myfont2.json', function (font) {
     var textMesh2 = new THREE.Mesh(txt1, materials);
     textMesh2.name = "myText1";
     scene.add(textMesh2)
-    textMesh2.position.y -= 5
+    textMesh2.position.y -= 4
 });
 loader.load('myfont.json', function (font) {
     const txt1 = new TextGeometry('davidsamy.com', {
@@ -76,7 +101,16 @@ document.body.addEventListener('mousemove', (event) => {
     pageY = event.pageY / window.innerHeight;
 });
 
-scene.background = new THREE.Color(0x555555);
+// function updateCamera() {
+//     let div1 = body;
+//     camera.position.z = 10 - window.scrollY / 500.0;
+// }
+
+// document.body.addEventListener("scroll", updateCamera);
+
+
+// scene.background = new THREE.Color(0x555555);
+scene.background = new THREE.TextureLoader().load( "background.jpg" );
 //  var light = new THREE.HemisphereLight(0xffffff, 0x000000, 2);
 var light = new THREE.AmbientLight(0xffffff);
 
