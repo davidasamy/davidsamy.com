@@ -1,7 +1,9 @@
 body {
     margin: 0;
+    cursor: url("cursor.cur"),default;
 }
 
 canvas {
     display: "block";
 }
+

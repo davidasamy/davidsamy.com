@@ -21,15 +21,15 @@ document.body.appendChild(renderer.domElement);
 
 
 const controls = new OrbitControls( camera, renderer.domElement );
-camera.position.set(0,0,50);
+camera.position.set(0,0,40);
 controls.update();
 
 const loader = new FontLoader();
 loader.load('myfont2.json', function (font) {
     const txt1 = new TextGeometry('COMING SOON', {
         font: font,
-        size: 1,
-        height: 0.1,
+        size: 1.2,
+        height: 0.5,
         curveSegments: 50,
         bevelEnabled: false,
         bevelOffset: 0,
@@ -40,12 +40,12 @@ loader.load('myfont2.json', function (font) {
     txt1.center();
     const materials = [
         new THREE.MeshStandardMaterial({ color: 0xffffff }), // front
-        //new THREE.MeshStandardMaterial({ color: 0x777777 }) // side
+        new THREE.MeshStandardMaterial({ color: 0x777777 }) // side
     ];
     var textMesh2 = new THREE.Mesh(txt1, materials);
     textMesh2.name = "myText1";
     scene.add(textMesh2)
-    textMesh2.position.y -= 20
+    textMesh2.position.y -= 5
 });
 loader.load('myfont.json', function (font) {
     const txt1 = new TextGeometry('davidsamy.com', {
@@ -77,7 +77,9 @@ document.body.addEventListener('mousemove', (event) => {
 });
 
 scene.background = new THREE.Color(0x555555);
-var light = new THREE.HemisphereLight(0xffffff, 0x000000, 2);
+//  var light = new THREE.HemisphereLight(0xffffff, 0x000000, 2);
+var light = new THREE.AmbientLight(0xffffff);
+
 scene.add(light);
 
 function animate() {
@@ -89,5 +91,6 @@ scene.getObjectByName("myText").rotation.x = (pageY - 0.5) * 2;
 scene.getObjectByName("myText").rotation.y = (pageX - 0.5) * 2;
 scene.getObjectByName("myText1").rotation.x = (pageY - 0.5) * 2;
 scene.getObjectByName("myText1").rotation.y = (pageX - 0.5) * 2;
+
 renderer.render(scene, camera);
 }
