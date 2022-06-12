@@ -2,6 +2,7 @@ import { GLTFLoader } from "./GLTFLoader.js";
 import { FontLoader } from "./FontLoader.js";
 import { TextGeometry } from "./TextGeometry.js";
 import { OrbitControls } from "./OrbitControls.js";
+import { TWEEN } from "./tween.module.min.js"
 //import { ImageLoader } from "./ImageLoader.js";
 var scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -10,6 +11,12 @@ const camera = new THREE.PerspectiveCamera(
     0.01,
     1000
 );
+
+
+var tween1 = new TWEEN.Tween(camera.position).to({z: '+100'}, 1000).easing(TWEEN.Easing.Quadratic.In);
+var tween2 = new TWEEN.Tween(camera.position).to({x: '+100'}, 1000);
+var tween3 = new TWEEN.Tween(camera.position).to({z: '-100'}, 1000).easing(TWEEN.Easing.Quadratic.Out);
+tween1.chain((tween2).chain(tween3));
 
 let body = document.getElementsByTagName("body");
 let pageX = 0.5;
@@ -20,36 +27,26 @@ renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 
-
-const controls = new OrbitControls( camera, renderer.domElement );
-controls.enablePan = false;
-controls.enableZoom = false;
 camera.position.set(0,0,40);
-controls.update();
-let loader = new THREE.ImageLoader();
 
-// load a image resource
-loader.load(
-	// resource URL
-	'github.png',
 
-	// onLoad callback
-	function ( image ) {
-		// use the image, e.g. draw part of it on a canvas
-		const canvas = document.createElement( 'canvas' );
-		const context = canvas.getContext( '2d' );
-		context.drawImage( image, 100, 100 );
-	},
 
-	// onProgress callback currently not supported
-	undefined,
 
-	// onError callback
-	function () {
-		console.error( 'An error happened.' );
-	}
-);
-loader = new FontLoader();
+const curve = new THREE.CubicBezierCurve3(
+    new THREE.Vector3(-0.5, 0.55, 0),
+    new THREE.Vector3(-0.5, 0.1, 0),
+    new THREE.Vector3(-0.45, 0.1, 0),
+    new THREE.Vector3(0, 0.1, 0)
+  );
+  
+  const points = curve.getPoints(50);
+  const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x00ffff });
+  const line = new THREE.Line(lineGeo, lineMat);
+  scene.add(line);
+
+
+const loader = new FontLoader();
 loader.load('myfont2.json', function (font) {
     const txt1 = new TextGeometry('WORK IN PROGRESS', {
         font: font,
@@ -101,30 +98,35 @@ document.body.addEventListener('mousemove', (event) => {
     pageY = event.pageY / window.innerHeight;
 });
 
-// function updateCamera() {
-//     let div1 = body;
-//     camera.position.z = 10 - window.scrollY / 500.0;
-// }
 
-// document.body.addEventListener("scroll", updateCamera);
+document.body.addEventListener('click', () => {
+    if (camera.position.x < 100) {
+        tween1.start();
+    }
+    else {
+        console.log('Error No More To Display')
+    }
+});
 
-
-// scene.background = new THREE.Color(0x555555);
-scene.background = new THREE.TextureLoader().load( "background.jpg" );
+scene.background = new THREE.Color(0x222222);
+// scene.background = new THREE.TextureLoader().load( "background.jpg" );
 //  var light = new THREE.HemisphereLight(0xffffff, 0x000000, 2);
 var light = new THREE.AmbientLight(0xffffff);
 
 scene.add(light);
 
+
+
 function animate() {
     requestAnimationFrame(animate);
+    TWEEN.update()
     render();
 }
+
 function render() {
 scene.getObjectByName("myText").rotation.x = (pageY - 0.5) * 2;
 scene.getObjectByName("myText").rotation.y = (pageX - 0.5) * 2;
 scene.getObjectByName("myText1").rotation.x = (pageY - 0.5) * 2;
 scene.getObjectByName("myText1").rotation.y = (pageX - 0.5) * 2;
-
 renderer.render(scene, camera);
 }
