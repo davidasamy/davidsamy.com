@@ -14,7 +14,7 @@ const camera = new THREE.PerspectiveCamera(
 
 
 var tween1 = new TWEEN.Tween(camera.position).to({z: '+100'}, 1000).easing(TWEEN.Easing.Quadratic.In);
-var tween2 = new TWEEN.Tween(camera.position).to({x: '+100'}, 1000);
+var tween2 = new TWEEN.Tween(camera.position).to({x: '+100'}, 500);
 var tween3 = new TWEEN.Tween(camera.position).to({z: '-100'}, 1000).easing(TWEEN.Easing.Quadratic.Out);
 tween1.chain((tween2).chain(tween3));
 
@@ -32,21 +32,38 @@ camera.position.set(0,0,40);
 
 
 
-const curve = new THREE.CubicBezierCurve3(
-    new THREE.Vector3(-0.5, 0.55, 0),
-    new THREE.Vector3(-0.5, 0.1, 0),
-    new THREE.Vector3(-0.45, 0.1, 0),
-    new THREE.Vector3(0, 0.1, 0)
-  );
-  
-  const points = curve.getPoints(50);
-  const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-  const lineMat = new THREE.LineBasicMaterial({ color: 0x00ffff });
-  const line = new THREE.Line(lineGeo, lineMat);
-  scene.add(line);
+let loader = new GLTFLoader();
 
+loader.load(
+// resource URL
+'scene.gltf',
+// called when the resource is loaded
+function ( gltf ) {
 
-const loader = new FontLoader();
+    scene.add( gltf.scene );
+
+    gltf.animations; // Array<THREE.AnimationClip>
+    gltf.scene; // THREE.Group
+    gltf.scenes; // Array<THREE.Group>
+    gltf.cameras; // Array<THREE.Camera>
+    gltf.asset; // Object
+
+},
+// called while loading is progressing
+function ( xhr ) {
+
+    console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+},
+// called when loading has errors
+function ( error ) {
+
+    console.log( 'An error happened' );
+
+}
+);
+
+loader = new FontLoader();
 loader.load('myfont2.json', function (font) {
     const txt1 = new TextGeometry('WORK IN PROGRESS', {
         font: font,
