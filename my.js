@@ -1,4 +1,5 @@
 import { GLTFLoader } from "./GLTFLoader.js"
+import { OrbitControls } from "./OrbitControls.js";
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(
     75,
@@ -17,9 +18,14 @@ loader.load('scene.gltf',function(gltf){
     obj = gltf.scene;
     scene.add(gltf.scene);
 });
+
+const controls = new OrbitControls( camera, renderer.domElement );
+camera.position.set(0,0,1);
+controls.update();
+
+scene.background = new THREE.Color(0xffffff);
 var light = new THREE.HemisphereLight(0xffffff, 0x000000, 2);
 scene.add(light);
-camera.position.set(0,0,10);
 
 function animate() {
     requestAnimationFrame(animate);
