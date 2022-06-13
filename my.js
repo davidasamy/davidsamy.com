@@ -13,7 +13,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 
-var tween1 = new TWEEN.Tween(camera.position).to({z: '+10000'}, 100000).easing(TWEEN.Easing.Quadratic.In);
+var tween1 = new TWEEN.Tween(camera.position).to({z: '+10000'}, 10000).easing(TWEEN.Easing.Quadratic.In);
 var tween2 = new TWEEN.Tween(camera.position).to({x: '+100'}, 500);
 var tween3 = new TWEEN.Tween(camera.position).to({z: '-100'}, 1000).easing(TWEEN.Easing.Quadratic.Out);
 //tween1.chain((tween2).chain(tween3));
