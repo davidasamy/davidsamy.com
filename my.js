@@ -13,9 +13,9 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 
-var tween1 = new TWEEN.Tween(camera.position).to({z: '+10000'}, 10000).easing(TWEEN.Easing.Quadratic.In);
-var tween2 = new TWEEN.Tween(camera.position).to({x: '+100'}, 500);
-var tween3 = new TWEEN.Tween(camera.position).to({z: '-100'}, 1000).easing(TWEEN.Easing.Quadratic.Out);
+var tween1 = new TWEEN.Tween(camera.position).to({ z: '+1000' }, 5000).easing(TWEEN.Easing.Quadratic.Out);
+var tween2 = new TWEEN.Tween(camera.position).to({ x: '+100' }, 500);
+var tween3 = new TWEEN.Tween(camera.position).to({ z: '-100' }, 1000).easing(TWEEN.Easing.Quadratic.Out);
 //tween1.chain((tween2).chain(tween3));
 
 let body = document.getElementsByTagName("body");
@@ -27,7 +27,7 @@ renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 
-camera.position.set(0,0,40);
+camera.position.set(0, 0, 40);
 
 
 
@@ -51,6 +51,8 @@ loader.load(
         //         l.shadow.mapSize.height = 2048
         //     }
         // })
+        console.log(gltf.scene.position);
+        gltf.scene.position.z = 1030
         scene.add(gltf.scene)
     },
     (xhr) => {
@@ -140,9 +142,9 @@ function animate() {
 }
 
 function render() {
-scene.getObjectByName("myText").rotation.x = (pageY - 0.5) * 2;
-scene.getObjectByName("myText").rotation.y = (pageX - 0.5) * 2;
-scene.getObjectByName("myText1").rotation.x = (pageY - 0.5) * 2;
-scene.getObjectByName("myText1").rotation.y = (pageX - 0.5) * 2;
-renderer.render(scene, camera);
+    scene.getObjectByName("myText").rotation.x = (pageY - 0.5) * 2;
+    scene.getObjectByName("myText").rotation.y = (pageX - 0.5) * 2;
+    scene.getObjectByName("myText1").rotation.x = (pageY - 0.5) * 2;
+    scene.getObjectByName("myText1").rotation.y = (pageX - 0.5) * 2;
+    renderer.render(scene, camera);
 }
