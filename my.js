@@ -13,70 +13,31 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 
-//var tween1 = new TWEEN.Tween(camera.position).to({ z: '+1000' }, 10000).easing(TWEEN.Easing.Elastic.Out);
 var tween1 = new TWEEN.Tween(camera.position).to({ x: `+${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
-//var tween3 = new TWEEN.Tween(camera.position).to({ z: '-1000' }, 10000).easing(TWEEN.Easing.Quadratic.Out);
-//tween1.chain((tween2).chain(tween3));
+
 
 let body = document.getElementsByTagName("body");
 let pageX = 0.5;
 let pageY = 0.5;
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.antialias = true;
 renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
-/*const geometry = new THREE.PlaneGeometry( 20000, 20000 );
-let material = new THREE.MeshBasicMaterial( {color: 0x444444, side: THREE.DoubleSide} );
-const plane = new THREE.Mesh( geometry, material );
-plane.position.x = 40;
-plane.position.y = -10;
-plane.rotation.x = Math.PI / 2;
-console.log(plane.position)
-scene.add( plane );*/
+var map = new THREE.TextureLoader().load("github.png");
+var material = new THREE.SpriteMaterial({ map: map, color: 0xffffff });
+const sprite = new THREE.Sprite(material);
+sprite.scale.set(35, 35, 1)
+sprite.position.x = window.innerWidth / 10;
+sprite.position.z = -20
+
 
 camera.position.set(0, 0, 40);
 
-function getsize(object) {
-    let boundingBox = new THREE.Box3().setFromObject(object);
-    return boundingBox.getSize();
-}
-
-let model;
-let loader = new GLTFLoader();
-/*
-loader.load(
-    'scene.gltf',
-    function (gltf) {
-        // gltf.scene.traverse(function (child) {
-        //     if ((child as THREE.Mesh).isMesh) {
-        //         const m = (child as THREE.Mesh)
-        //         m.receiveShadow = true
-        //         m.castShadow = true
-        //     }
-        //     if (((child as THREE.Light)).isLight) {
-        //         const l = (child as THREE.Light)
-        //         l.castShadow = true
-        //         l.shadow.bias = -.003
-        //         l.shadow.mapSize.width = 2048
-        //         l.shadow.mapSize.height = 2048
-        //     }
-        // })
-        model = gltf.scene
-        console.log(model.position);
-        model.position.z = 1030
-        scene.add(model)
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-        console.log(error)
-    }
-)*/
 
 var size;
-loader = new FontLoader();
+let loader = new FontLoader();
 loader.load('myfont2.json', function (font) {
     const txt1 = new TextGeometry('WORK IN PROGRESS', {
         font: font,
@@ -102,7 +63,7 @@ loader.load('myfont2.json', function (font) {
 loader.load('myfont.json', function (font) {
     const txt1 = new TextGeometry('davidsamy.com', {
         font: font,
-        size: window.innerWidth / 200/*5*/,
+        size: window.innerWidth / 200,
         height: 1,
         curveSegments: 50,
         bevelEnabled: true,
@@ -122,26 +83,35 @@ loader.load('myfont.json', function (font) {
     scene.add(textMesh1)
     animate();
 });
+var uptween;
+var downtween;
 loader.load('myfont2.json', function (font) {
     const txt1 = new TextGeometry('GitHub', {
         font: font,
-        size: 5,
+        size: window.innerWidth / 150,
         height: 1,
         curveSegments: 50,
         bevelEnabled: true,
         bevelOffset: 0,
         bevelSegments: 1,
-        bevelSize: 0.3,
+        bevelSize: 0.6,
         bevelThickness: 0.2
     });
     txt1.center();
     const materials = [
         new THREE.MeshStandardMaterial({ color: 0xffffff }), // front
-        new THREE.MeshStandardMaterial({ color: 0x777777 }) // side
+        new THREE.MeshStandardMaterial({ color: 0x000000 }) // side
     ];
     var textMesh3 = new THREE.Mesh(txt1, materials);
     textMesh3.name = "myText3";
     textMesh3.position.x = window.innerWidth / 10;
+    textMesh3.position.y = -5
+    uptween = new TWEEN.Tween(textMesh3.position).to({ y: `+${10}` }, 2000).easing(TWEEN.Easing.Exponential.InOut
+    );
+    downtween = new TWEEN.Tween(textMesh3.position).to({ y: `-${10}` }, 2000).easing(TWEEN.Easing.Exponential.InOut
+    );
+    uptween.chain(downtween);
+    downtween.chain(uptween);
     scene.add(textMesh3)
     animate();
 });
@@ -154,21 +124,27 @@ document.body.addEventListener('mousemove', (event) => {
 
 
 document.body.addEventListener('click', () => {
-    if (camera.position.z < 100) {
+    if (camera.position.x < window.innerWidth / 10) {
         tween1.start();
+        uptween.start();
+        scene.add(sprite);
+    }
+    else if (camera.position.x < (window.innerWidth / 10) * 2) {
+        tween1.start();
+        scene.remove(sprite);
     }
     else {
         console.log('Error No More To Display')
     }
 });
 
-scene.background = new THREE.Color(0x222222);
-// scene.background = new THREE.TextureLoader().load( "background.jpg" );
-//  var light = new THREE.HemisphereLight(0xffffff, 0x000000, 2);
+scene.background = new THREE.Color(0x333333);
+
 var light = new THREE.AmbientLight(0xffffff);
 
 scene.add(light);
 
+var tween1 = new TWEEN.Tween(camera.position).to({ x: `+${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
 
 
 function animate() {
@@ -182,7 +158,11 @@ function render() {
     scene.getObjectByName("myText").rotation.y = (pageX - 0.5) * 2;
     scene.getObjectByName("myText1").rotation.x = (pageY - 0.5) * 2;
     scene.getObjectByName("myText1").rotation.y = (pageX - 0.5) * 2;
-    scene.getObjectByName("myText3").rotation.x = (pageY - 0.5) * 2;
+    if (camera.position.x == window.innerWidth / 10) {
+        scene.getObjectByName("myText3").rotation.y = (pageX - 0.5) * 2;
+        sprite.rotation.y = (pageX - 0.5) * 2;
+
+    }
     //model.rotation.y = (pageX - 0.5) * 2;
     renderer.render(scene, camera);
 }
