@@ -13,9 +13,9 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 
-var tween1 = new TWEEN.Tween(camera.position).to({ z: '+1000' }, 5000).easing(TWEEN.Easing.Quadratic.Out);
-var tween2 = new TWEEN.Tween(camera.position).to({ x: '+100' }, 500);
-var tween3 = new TWEEN.Tween(camera.position).to({ z: '-100' }, 1000).easing(TWEEN.Easing.Quadratic.Out);
+//var tween1 = new TWEEN.Tween(camera.position).to({ z: '+1000' }, 10000).easing(TWEEN.Easing.Elastic.Out);
+var tween1 = new TWEEN.Tween(camera.position).to({ x: `+${window.innerWidth/10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
+//var tween3 = new TWEEN.Tween(camera.position).to({ z: '-1000' }, 10000).easing(TWEEN.Easing.Quadratic.Out);
 //tween1.chain((tween2).chain(tween3));
 
 let body = document.getElementsByTagName("body");
@@ -26,14 +26,22 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
+/*const geometry = new THREE.PlaneGeometry( 20000, 20000 );
+let material = new THREE.MeshBasicMaterial( {color: 0x444444, side: THREE.DoubleSide} );
+const plane = new THREE.Mesh( geometry, material );
+plane.position.x = 40;
+plane.position.y = -10;
+plane.rotation.x = Math.PI / 2;
+console.log(plane.position)
+scene.add( plane );*/
 
 camera.position.set(0, 0, 40);
 
 
 
-
+let model;
 let loader = new GLTFLoader();
-
+/*
 loader.load(
     'scene.gltf',
     function (gltf) {
@@ -51,9 +59,10 @@ loader.load(
         //         l.shadow.mapSize.height = 2048
         //     }
         // })
-        console.log(gltf.scene.position);
-        gltf.scene.position.z = 1030
-        scene.add(gltf.scene)
+        model = gltf.scene
+        console.log(model.position);
+        model.position.z = 1030
+        scene.add(model)
     },
     (xhr) => {
         console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
@@ -61,7 +70,7 @@ loader.load(
     (error) => {
         console.log(error)
     }
-)
+)*/
 
 
 loader = new FontLoader();
@@ -118,7 +127,7 @@ document.body.addEventListener('mousemove', (event) => {
 
 
 document.body.addEventListener('click', () => {
-    if (camera.position.x < 100) {
+    if (camera.position.z < 100) {
         tween1.start();
     }
     else {
@@ -146,5 +155,6 @@ function render() {
     scene.getObjectByName("myText").rotation.y = (pageX - 0.5) * 2;
     scene.getObjectByName("myText1").rotation.x = (pageY - 0.5) * 2;
     scene.getObjectByName("myText1").rotation.y = (pageX - 0.5) * 2;
+    //model.rotation.y = (pageX - 0.5) * 2;
     renderer.render(scene, camera);
 }
