@@ -12,8 +12,10 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
+var current_slide = 1;
 
-var tween1 = new TWEEN.Tween(camera.position).to({ x: `+${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
+var forward = new TWEEN.Tween(camera.position).to({ x: `+${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
+var backward = new TWEEN.Tween(camera.position).to({ x: `-${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
 
 
 let body = document.getElementsByTagName("body");
@@ -122,21 +124,37 @@ document.body.addEventListener('mousemove', (event) => {
     pageY = event.pageY / window.innerHeight;
 });
 
-
-document.body.addEventListener('click', () => {
-    if (camera.position.x < window.innerWidth / 10) {
-        tween1.start();
+function next() {
+    if (current_slide == 1) {
+        forward.start();
         uptween.start();
         scene.add(sprite);
+        current_slide ++;
     }
-    else if (camera.position.x < (window.innerWidth / 10) * 2) {
-        tween1.start();
+    else if (current_slide == 2) {
+        forward.start();
         scene.remove(sprite);
+        current_slide ++;
     }
     else {
         console.log('Error No More To Display')
     }
-});
+}
+
+function previous() {
+    if (current_slide == 1) {
+        console.log('Error No More To Display')
+    }
+    else if (current_slide == 2) {
+        backward.start();
+        scene.remove(sprite);
+        current_slide ++;
+    }
+    else {
+        console.log('Error No More To Display')
+    }
+}
+document.body.addEventListener('click', next);
 
 scene.background = new THREE.Color(0x333333);
 
