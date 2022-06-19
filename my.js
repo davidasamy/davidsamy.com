@@ -3,6 +3,7 @@ import { FontLoader } from "./FontLoader.js";
 import { TextGeometry } from "./TextGeometry.js";
 import { OrbitControls } from "./OrbitControls.js";
 import { TWEEN } from "./tween.module.min.js"
+import { Sprite } from "./three.module.js";
 //import { ImageLoader } from "./ImageLoader.js";
 var scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -11,12 +12,17 @@ const camera = new THREE.PerspectiveCamera(
     0.01,
     1000
 );
-
+const move_segment = window.innerWidth / 10 + 200
 var current_slide = 1;
-
-var forward = new TWEEN.Tween(camera.position).to({ x: `+${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
-var backward = new TWEEN.Tween(camera.position).to({ x: `-${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
-
+let intween = false;
+var forward = new TWEEN.Tween(camera.position).to({ x: `+${move_segment}` }, 1300).easing(TWEEN.Easing.Back.InOut);
+var backward = new TWEEN.Tween(camera.position).to({ x: `-${move_segment}` }, 1300).easing(TWEEN.Easing.Back.InOut);
+forward.onComplete(function() {
+    intween = false
+})
+backward.onComplete(function() {
+    intween = false
+})
 
 let body = document.getElementsByTagName("body");
 let pageX = 0.5;
@@ -29,11 +35,20 @@ document.body.appendChild(renderer.domElement);
 
 var map = new THREE.TextureLoader().load("github.png");
 var material = new THREE.SpriteMaterial({ map: map, color: 0xffffff });
-const sprite = new THREE.Sprite(material);
-sprite.scale.set(35, 35, 1)
-sprite.position.x = window.innerWidth / 10;
-sprite.position.z = -20
-scene.add(sprite);
+const github = new THREE.Sprite(material);
+github.scale.set(35, 35, 1)
+github.position.x = move_segment;
+github.position.z = -20
+scene.add(github);
+
+var map = new THREE.TextureLoader().load("twitter.png");
+var material = new THREE.SpriteMaterial({ map: map, color: 0xffffff });
+const twitter = new THREE.Sprite(material);
+twitter.scale.set(35, 35, 1)
+twitter.position.x = 2 * (move_segment);
+twitter.position.z = -20
+twitter.position.y = 0
+scene.add(twitter);
 
 camera.position.set(0, 0, 40);
 
@@ -81,7 +96,6 @@ loader.load('myfont.json', function (font) {
     ];
     var textMesh1 = new THREE.Mesh(txt1, materials);
     textMesh1.name = "myText";
-    console.log(textMesh1.height);
     scene.add(textMesh1)
     animate();
 });
@@ -106,7 +120,7 @@ loader.load('myfont2.json', function (font) {
     ];
     var textMesh3 = new THREE.Mesh(txt1, materials);
     textMesh3.name = "myText3";
-    textMesh3.position.x = window.innerWidth / 10;
+    textMesh3.position.x = move_segment;
     textMesh3.position.y = -5
     uptween = new TWEEN.Tween(textMesh3.position).to({ y: `+${10}` }, 2000).easing(TWEEN.Easing.Exponential.InOut
     );
@@ -115,6 +129,37 @@ loader.load('myfont2.json', function (font) {
     uptween.chain(downtween);
     downtween.chain(uptween);
     scene.add(textMesh3)
+});
+var uptween2;
+var downtween2;
+loader.load('myfont2.json', function (font) {
+    const txt1 = new TextGeometry('Twitter', {
+        font: font,
+        size: window.innerWidth / 150,
+        height: window.innerWidth / 750,
+        curveSegments: 50,
+        bevelEnabled: true,
+        bevelOffset: 0,
+        bevelSegments: 1,
+        bevelSize: 0.6,
+        bevelThickness: 0.2
+    });
+    txt1.center();
+    const materials = [
+        new THREE.MeshStandardMaterial({ color: 0xffffff }), // front
+        new THREE.MeshStandardMaterial({ color: 0x1373ad }) // side
+    ];
+    var textMesh4 = new THREE.Mesh(txt1, materials);
+    textMesh4.name = "myText4";
+    textMesh4.position.x = 2 * (move_segment);
+    textMesh4.position.y = -5
+    uptween2 = new TWEEN.Tween(textMesh4.position).to({ y: `+${10}` }, 2000).easing(TWEEN.Easing.Exponential.InOut
+    );
+    downtween2 = new TWEEN.Tween(textMesh4.position).to({ y: `-${10}` }, 2000).easing(TWEEN.Easing.Exponential.InOut
+    );
+    uptween2.chain(downtween2);
+    downtween2.chain(uptween2);
+    scene.add(textMesh4)
     animate();
 });
 
@@ -125,14 +170,17 @@ document.body.addEventListener('mousemove', (event) => {
 });
 
 function next() {
-    if (current_slide == 1) {
+    if (current_slide == 1 && intween == false) {
         forward.start();
         uptween.start();
+        intween = true;
         current_slide ++;
     }
-    else if (current_slide == 2) {
+    else if (current_slide == 2 && intween == false) {
         forward.start();
+        intween = true;
         current_slide ++;
+        uptween2.start()
     }
     else {
         console.log('Error No More To Display')
@@ -143,12 +191,14 @@ function previous() {
     if (current_slide == 1) {
         console.log('Error No More To Display')
     }
-    else if (current_slide == 2) {
+    else if (current_slide == 2 && intween == false) {
         backward.start();
+        intween = true;
         current_slide --;
     }
-    else {
+    else if (intween == false) {
         backward.start();
+        intween = true;
         current_slide --;
     }
 }
@@ -163,6 +213,27 @@ scene.add(light);
 
 var tween1 = new TWEEN.Tween(camera.position).to({ x: `+${window.innerWidth / 10}` }, 1000).easing(TWEEN.Easing.Back.InOut);
 
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+function clickOnSprite(event){
+
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1; 
+    raycaster.setFromCamera( mouse, camera );   
+
+    let intersects = raycaster.intersectObject( github, true );
+    if (intersects.length == 1 && current_slide == 2){
+        console.log("clicked github");
+        window.open("https://github.com/davidasamy", "_blank");
+    }
+    intersects = raycaster.intersectObject( twitter, true );
+    if (intersects.length == 1 && current_slide == 3){
+        console.log("clicked twitter");
+        window.open("https://twitter.com/davidsamy_", "_blank");
+    }
+}
+
+document.addEventListener("click", clickOnSprite)
 
 function animate() {
     requestAnimationFrame(animate);
@@ -175,10 +246,11 @@ function render() {
     scene.getObjectByName("myText").rotation.y = (pageX - 0.5) * 2;
     scene.getObjectByName("myText1").rotation.x = (pageY - 0.5) * 2;
     scene.getObjectByName("myText1").rotation.y = (pageX - 0.5) * 2;
-    if (camera.position.x == window.innerWidth / 10) {
+    if (current_slide == 2) {
         scene.getObjectByName("myText3").rotation.y = (pageX - 0.5) * 2;
-        sprite.rotation.y = (pageX - 0.5) * 2;
-
+    }
+    if (current_slide == 3) {
+        scene.getObjectByName("myText4").rotation.y = (pageX - 0.5) * 2;
     }
     //model.rotation.y = (pageX - 0.5) * 2;
     renderer.render(scene, camera);
