@@ -33,7 +33,7 @@ const sprite = new THREE.Sprite(material);
 sprite.scale.set(35, 35, 1)
 sprite.position.x = window.innerWidth / 10;
 sprite.position.z = -20
-
+scene.add(sprite);
 
 camera.position.set(0, 0, 40);
 
@@ -41,7 +41,7 @@ camera.position.set(0, 0, 40);
 var size;
 let loader = new FontLoader();
 loader.load('myfont2.json', function (font) {
-    const txt1 = new TextGeometry('WORK IN PROGRESS', {
+    const txt1 = new TextGeometry('WELCOME TO MY SITE', {
         font: font,
         size: window.innerWidth / 833.3333,
         height: 0.5,
@@ -128,12 +128,10 @@ function next() {
     if (current_slide == 1) {
         forward.start();
         uptween.start();
-        scene.add(sprite);
         current_slide ++;
     }
     else if (current_slide == 2) {
         forward.start();
-        scene.remove(sprite);
         current_slide ++;
     }
     else {
@@ -147,14 +145,15 @@ function previous() {
     }
     else if (current_slide == 2) {
         backward.start();
-        scene.remove(sprite);
-        current_slide ++;
+        current_slide --;
     }
     else {
-        console.log('Error No More To Display')
+        backward.start();
+        current_slide --;
     }
 }
-document.body.addEventListener('click', next);
+document.getElementById("rightarr").addEventListener('click', next);
+document.getElementById("leftarr").addEventListener('click', previous);
 
 scene.background = new THREE.Color(0x333333);
 
